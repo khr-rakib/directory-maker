@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KH Rakib - Directory Maker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body>
+    <div class="h-screen w-full bg-gray-100 px-4 md:px-0 py-20">
+        <div class="md:w-2/3 mx-auto">
+            <div class="bg-white shadow-lg rounded-xl p-4">
+                <div>
+                    <div class="border-b-2 pb-4 mb-2 flex flex-col sm:flex-row justify-between gap-4 sm:gap-10">
+                        <form id="addNewDirForm" class="flex-1">
+                            <div class="flex flex-row items-center w-full gap-2">
+                                <div class="flex-1">
+                                    <input type="text" id="dirField"
+                                        class="border border-black rounded-md py-2 px-4 w-full"
+                                        placeholder="Enter directory name here" />
+                                </div>
+                                <div>
+                                    <button type="submit"
+                                        class="text-white bg-blue-500 hover:bg-blue-700 rounded-md py-2 px-5 w-full">Add</button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <div>
+                            <button id="processBtn" onclick="proceedToDownload()" type="submit"
+                                class="bg-green-300 hover:bg-green-500 rounded-md py-2 px-5 disabled:bg-gray-100 w-full sm:w-auto">Process To Download</button>
+                        </div>
+                    </div>
+
+
+                    <div class="max-h-96 overflow-y-auto" id="directoryList">
+                        <!-- === -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="loadingDiv" class="absolute top-0 left-0 z-10 flex justify-center items-center h-screen w-full backdrop-sepia bg-white/30 hidden">
+        <div>
+            <img src='https://flevix.com/wp-content/uploads/2019/07/Color-Loading-2.gif' alt='loading...' />
+        </div>
+    </div>
+
+
+    <script>
+        const form = document.getElementById('addNewDirForm');
+        const dirField = document.getElementById('dirField');
+        const processBtn = document.getElementById('processBtn');
+        const directoryList = document.getElementById('directoryList');
+        const loadingDiv = document.getElementById('loadingDiv');
+
+        let dirInputNames = [];
+        let loading = false;
+
+        function downloadFile(fileUrl) {
+            window.open('/' + fileUrl);
+
+            setTimeout(() => {
+                fetch(`/${fileUrl}`, {
+                    method: 'DELETE',
+                }).then(res => res.json())
+                    .then(() => window.location.reload());
+            }, 3000);
+        }
+
+        function proceedToDownload() {
+            loadingDiv.classList.toggle('hidden');
+            fetch('/', {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ data: dirInputNames })
+            }).then(res => res.json())
+                .then(data => {
+                    if (data.status === 'fail') {
+                        alert(data.msg);
+                    } else if (data.status === 'success') {
+                        processBtn.setAttribute('disabled', 'true');
+                        downloadFile(data.zipFile);
+                    } else {
+                        alert('Please reload your browser.');
+                    }
+                }).finally(() => loadingDiv.classList.toggle('hidden'));
+        }
+
+        function deleteDir(idx) {
+            let a = document.getElementById(idx);
+            a.remove();
+
+            dirInputNames = dirInputNames.filter((value, index, arr) => {
+                return value.id !== idx;
+            });
+        }
+
+        function renderOnDom(dirName, idx) {
+            const createDiv = document.createElement("div");
+            createDiv.classList = 'flex justify-between hover:bg-gray-200 p-2 rounded-md transition duration-300';
+            createDiv.id = idx;
+
+            createDiv.innerHTML = `
+                <div class="flex justify-between gap-3">
+                    ${idx}.
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                            d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
+                    </svg>
+                    ${dirName}
+                </div>
+                <button type="button" onclick="deleteDir(${idx})">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-400 hover:text-red-700"
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
+                </button>                
+            `;
+
+            directoryList.appendChild(createDiv);
+        }
+
+        let idx = 0;
+        form.onsubmit = function (e) {
+            e.preventDefault();
+            if (dirField.value === '') {
+                return alert('Enter a directory name first.')
+            }
+            idx++;
+            dirInputNames.push({ id: idx, name: dirField.value });
+            renderOnDom(dirField.value, idx);
+            dirField.value = '';
+        }
+    </script>
+</body>
+
+</html>

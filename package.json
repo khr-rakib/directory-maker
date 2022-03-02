@@ -1,0 +1,17 @@
+{
+  "name": "dir-making",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon app"
+  },
+  "dependencies": {
+    "adm-zip": "^0.5.9",
+    "ejs": "^3.1.6",
+    "express": "^4.17.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
