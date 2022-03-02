@@ -22,7 +22,7 @@ app.all('*', (req, res) => {
 })
 
 // app listen
-const PORT = process.env.PORT || 500;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () =>
     console.log(`app is running on port - ${PORT}`)
 );
