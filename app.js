@@ -24,7 +24,5 @@ app.all('*', (req, res) => {
 // app listen
 const PORT = process.env.PORT || 500;
 app.listen(PORT, () =>
-    console.log(
-        `app is running on port - ${PORT}`
-    )
+    console.log(`app is running on port - ${PORT}`)
 );
