@@ -52,10 +52,8 @@ exports.generateZip = (req, res) => {
     });
 
     setTimeout(async () => {
-        for(let x = 0; x < data.length; x++) {
-            zip.addLocalFolder(appDir + "/public/",  data[x]['name']);
-        }
-        
+        zip.addLocalFolder(appDir + "/public/", 'public');
+
         const downloadName = `directories-${Date.now()}.zip`;
         const datas = zip.toBuffer();
 
@@ -63,7 +61,7 @@ exports.generateZip = (req, res) => {
 
         res.set('Content-Type', 'application/octet-stream');
         res.set('Content-Disposition', `attachment; filename=${downloadName}`);
-        res.set('Content-Length',datas.length);
+        res.set('Content-Length', datas.length);
         const dFile = `${downloadName}`;
 
         res.status(200).json({
@@ -75,9 +73,9 @@ exports.generateZip = (req, res) => {
 }
 
 exports.removeZipFile = (req, res) => {
-    if(fs.existsSync('download')) {
+    if (fs.existsSync('download')) {
         fs.unlink(appDir + '/download/' + req.params.name, (err) => {
-            err &&  console.log('error occur when rmeove folder.');
+            err && console.log('error occur when rmeove folder.');
             console.log('successfully clear');
         });
         res.status(200).json({

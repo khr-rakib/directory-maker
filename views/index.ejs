@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KH Rakib - Directory Maker</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 </head>
 
 <body>
@@ -31,7 +31,8 @@
 
                         <div>
                             <button id="processBtn" onclick="proceedToDownload()" type="submit"
-                                class="bg-green-300 hover:bg-green-500 rounded-md py-2 px-5 disabled:bg-gray-100 w-full sm:w-auto">Process To Download</button>
+                                class="bg-green-300 hover:bg-green-500 rounded-md py-2 px-5 disabled:bg-gray-100 w-full sm:w-auto">Process
+                                To Download</button>
                         </div>
                     </div>
 
@@ -44,9 +45,11 @@
         </div>
     </div>
 
-    <div id="loadingDiv" class="absolute top-0 left-0 z-10 flex justify-center items-center h-screen w-full backdrop-sepia bg-white/30 hidden">
+    <div id="loadingDiv"
+        class="absolute top-0 left-0 z-10 flex justify-center items-center h-screen w-full backdrop-sepia bg-white/30 hidden">
         <div>
-            <img src='https://flevix.com/wp-content/uploads/2019/07/Color-Loading-2.gif' alt='loading...' />
+            <img src='https://mir-s3-cdn-cf.behance.net/project_modules/max_632/04de2e31234507.564a1d23645bf.gif'
+                alt='loading...' />
         </div>
     </div>
 
@@ -73,7 +76,20 @@
         }
 
         function proceedToDownload() {
+            if (dirInputNames.length < 1) {
+                return Toastify({
+                    text: 'Please input directory name first.',
+                    duration: 3000,
+                    close: true,
+                    gravity: "top", // `top` or `bottom`
+                    position: "right", // `left`, `center` or `right`
+                    stopOnFocus: true, // Prevents dismissing of toast on hover
+                    onClick: function () { } // Callback after click
+                }).showToast();
+            }
+
             loadingDiv.classList.toggle('hidden');
+
             fetch('/', {
                 method: 'POST',
                 headers: {
@@ -84,12 +100,28 @@
             }).then(res => res.json())
                 .then(data => {
                     if (data.status === 'fail') {
-                        alert(data.msg);
+                        Toastify({
+                            text: data.msg,
+                            duration: 3000,
+                            close: true,
+                            gravity: "top", // `top` or `bottom`
+                            position: "right", // `left`, `center` or `right`
+                            stopOnFocus: true, // Prevents dismissing of toast on hover
+                            onClick: function () { } // Callback after click
+                        }).showToast();
                     } else if (data.status === 'success') {
                         processBtn.setAttribute('disabled', 'true');
                         downloadFile(data.zipFile);
                     } else {
-                        alert('Please reload your browser.');
+                        Toastify({
+                            text: "Please reload your browser.",
+                            duration: 3000,
+                            close: true,
+                            gravity: "top", // `top` or `bottom`
+                            position: "right", // `left`, `center` or `right`
+                            stopOnFocus: true, // Prevents dismissing of toast on hover
+                            onClick: function () { } // Callback after click
+                        }).showToast();
                     }
                 }).finally(() => loadingDiv.classList.toggle('hidden'));
         }
@@ -101,6 +133,16 @@
             dirInputNames = dirInputNames.filter((value, index, arr) => {
                 return value.id !== idx;
             });
+
+            Toastify({
+                text: "Directory was deleted successfully!",
+                duration: 3000,
+                close: true,
+                gravity: "top", // `top` or `bottom`
+                position: "right", // `left`, `center` or `right`
+                stopOnFocus: true, // Prevents dismissing of toast on hover
+                onClick: function () { } // Callback after click
+            }).showToast();
         }
 
         function renderOnDom(dirName, idx) {
@@ -134,7 +176,16 @@
         form.onsubmit = function (e) {
             e.preventDefault();
             if (dirField.value === '') {
-                return alert('Enter a directory name first.')
+                Toastify({
+                    text: "Enter a directory name first.",
+                    duration: 3000,
+                    close: true,
+                    gravity: "top", // `top` or `bottom`
+                    position: "right", // `left`, `center` or `right`
+                    stopOnFocus: true, // Prevents dismissing of toast on hover
+                    onClick: function () { } // Callback after click
+                }).showToast();
+                return;
             }
             idx++;
             dirInputNames.push({ id: idx, name: dirField.value });
@@ -142,6 +193,9 @@
             dirField.value = '';
         }
     </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 </body>
 
 </html>
